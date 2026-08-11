@@ -147,7 +147,11 @@ Located under `.agents/skills/`:
 - **Test-Driven Development (TDD) / Prove-It Skill**: Enforces writing a failing reproduction test (RED) before fixing a bug, and verifying that the fix successfully passes the test (GREEN) without breaking regressions.
 - **Secure Coding Guidelines**: Guides the agent to validate inputs against allow-lists, prevent SQL injection via parameterized queries, and resolve absolute paths using canonicalization.
 
-### 2. Lifecyle Hooks
+### 2. Workflow Enforcement Rules
+Located under `.agents/rules/`:
+- **Security-Driven Development Workflow Rule** (`security_workflow.md`): An `always_on` workspace rule that guarantees the agent performs Threat Modeling first (to produce `threat_model.md`) and follows the TDD cycle before proposing any code fixes.
+
+### 3. Lifecycle Hooks
 Defined in `.agents/hooks.json`, the hook intercepts `git push` commands:
 ```json
 {
@@ -168,7 +172,7 @@ Defined in `.agents/hooks.json`, the hook intercepts `git push` commands:
 }
 ```
 
-### 3. Hook Script (`security_gate_hook.sh`)
+### 4. Hook Script (`security_gate_hook.sh`)
 When the agent executes `git push`, the script interceptor:
 1. Discovers modified files in the commit.
 2. Runs CodeMender scan (`cm find`) on those files.
