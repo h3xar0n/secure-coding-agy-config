@@ -1,0 +1,16 @@
+{
+  "codemender-security-gate": {
+    "PreToolUse": [
+      {
+        "matcher": "git push*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./.agents/security_gate_hook.sh",
+            "timeout": 120
+          }
+        ]
+      }
+    ]
+  }
+}
