@@ -6,6 +6,8 @@ This setup automatically acts as a first line of defense in your software develo
 
 > [!IMPORTANT]
 > **CodeMender Access is Limited:** Access to the CodeMender API and artifacts is currently restricted. Ensure your Google Cloud account has been granted authorization and is associated with a project where the CodeMender API is enabled before attempting to run scans.
+> 
+> *If you do not have access to CodeMender, you can use the alternate Semgrep-based configuration (see the Lifecycle Hooks section below) to run local, open-source security scans.*
 
 ---
 
@@ -158,7 +160,7 @@ Located under `.agents/rules/`:
 ### 3. Lifecycle Hooks
 There are two hooks configurations available:
 - **CodeMender Hook** (`.agents/hooks.json`): Intercepts `git push` to run the CodeMender-based security gate script.
-- **Semgrep Hook** (`.agents/hooks_semgrep.json`): (Alternate) Intercepts `git push` to run the Semgrep-based security gate script. Rename this file to `hooks.json` to activate it.
+- **Semgrep Hook** (`.agents/hooks_semgrep.json`): (Alternate) Use this if you do not have access to CodeMender. Intercepts `git push` to run the Semgrep-based security gate script. Rename this file to `hooks.json` to activate it.
 
 Example `hooks_semgrep.json` configuration:
 ```json
