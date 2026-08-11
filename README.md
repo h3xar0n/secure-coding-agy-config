@@ -149,7 +149,7 @@ Located under `.agents/skills/`:
 
 ### 2. Workflow Enforcement Rules
 Located under `.agents/rules/`:
-- **Security-Driven Development Workflow Rule** (`security_workflow.md`): An `always_on` workspace rule that guarantees the agent performs Threat Modeling first (to produce `threat_model.md`) and follows the TDD cycle before proposing any code fixes.
+- **Security-Driven Development Workflow Rule** (`security_workflow.md`): An `always_on` workspace rule that guarantees the agent follows the correct sequence: Planning -> Threat Modeling (producing `threat_model.md`) -> Writing functional & security tests (RED step) -> Implementing secure code (GREEN step, utilizing the `secure_coding` Guidelines Skill) -> Verification and pushing.
 
 ### 3. Lifecycle Hooks
 Defined in `.agents/hooks.json`, the hook intercepts `git push` commands:
