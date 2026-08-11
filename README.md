@@ -182,6 +182,9 @@ When the agent executes `git push`, the script interceptor:
 
 ## Walkthrough: CodeMender CLI Basics
 
+> [!NOTE]
+> **Agent Automation:** While this walkthrough covers how to run the CodeMender CLI commands manually to understand their behavior, these commands (`cm find`, `cm fix`, `cm verify`) are automatically run and managed by the Antigravity agent in the background via the pre-push hook configuration.
+
 ### Sample Application Setup
 Create a file named `sample_app/data_service.py` to practice scanning:
 ```python
@@ -242,12 +245,12 @@ cm report
 ### Verifying Findings (Exploitability Checks)
 Verify if the path traversal can be actively exploited:
 ```bash
-cm verify e5f6g7h8
+cm verify <finding_id>
 ```
 
 ### Remediating Findings
 Fix a specific SQL Injection finding automatically:
 ```bash
-cm fix a1b2c3d4
+cm fix <finding_id>
 ```
 CodeMender generates the remediation patch, outputs a code diff, and updates your workspace files.
