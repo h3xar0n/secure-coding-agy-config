@@ -18,6 +18,8 @@ your-workspace/
 ├── .agents/
 │   ├── hooks.json
 │   ├── security_gate_hook.sh
+│   ├── rules/
+│   │   └── security_workflow.md
 │   └── skills/
 │       ├── test_driven_development/
 │       │   └── SKILL.md
