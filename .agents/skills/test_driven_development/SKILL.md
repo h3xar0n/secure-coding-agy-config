@@ -11,9 +11,12 @@ This skill is based on classic TDD methodologies (such as Kent Beck's *Test-Driv
 3. **Write Minimal Production Code to Pass**: Write only the simplest production code that makes the failing test pass. Do not write extra features or speculative code.
 
 ## The TDD Cycle (PRGR-P)
-1. **PLAN**: Outline the design, requirements, and test scenarios. If fixing a security vulnerability, utilize the **Threat Modeling Skill** first to locate all entry points and trust boundaries.
+1. **PLAN**: 
+   - Outline the design, requirements, and test scenarios.
+   - If fixing a security vulnerability or implementing a new entry point, utilize the **Threat Modeling Skill** first to produce a `threat_model.md` artifact.
 2. **RED**: 
    - Write a unit test (or integration test) that asserts the desired behavior, edge cases, or vulnerability.
+   - **Security Hardening**: Look at the `threat_model.md` artifact. You must write test cases that attempt to exploit/bypass each identified entry point (input validation tests) and cross each trust boundary without credentials (authentication/authorization tests).
    - Run the test suite and verify that the test fails.
    - **Crucial**: Ensure the test fails for the *expected reason* (e.g., assertion failure or expected exception) and not due to a syntax/import error in the test file.
 3. **GREEN**: 
@@ -28,6 +31,8 @@ This skill is based on classic TDD methodologies (such as Kent Beck's *Test-Driv
 ## The Prove-It Pattern (Security Remediations)
 When addressing a security vulnerability:
 1. **Identify**: Trace the vulnerability to the source file.
-2. **RED Step**: Write a test or script reproducing the exploit (e.g. attempting SQL injection or path traversal) and confirm that the vulnerability is triggered (test fails).
+2. **RED Step**: 
+   - Refer to the entry points and threat matrix in the `threat_model.md` artifact.
+   - Write a test or script reproducing the exploit (e.g. attempting SQL injection or path traversal) and confirm that the vulnerability is triggered (test fails).
 3. **GREEN Step**: Apply the security patch (manually or via `cm fix`) and verify that the exploit test now fails to compromise the system (test passes).
 4. **PUSH Step**: Run `git push` to trigger the pre-push security verification hook.
