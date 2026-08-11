@@ -254,3 +254,11 @@ Fix a specific SQL Injection finding automatically:
 cm fix <finding_id>
 ```
 CodeMender generates the remediation patch, outputs a code diff, and updates your workspace files.
+
+---
+
+## Credits & References
+
+- **Test-Driven Development (TDD) Skill**: Inspired by and adapted from classic TDD methodologies:
+  - *Test-Driven Development: By Example* by Kent Beck.
+  - *Three Laws of TDD* by Robert C. Martin (Uncle Bob).
