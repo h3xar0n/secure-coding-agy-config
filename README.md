@@ -16,8 +16,10 @@ For Antigravity to discover and execute your security rules and hooks, place the
 ```none
 your-workspace/
 ├── .agents/
-│   ├── hooks.json
-│   ├── security_gate_hook.sh
+│   ├── hooks.json                     # CodeMender hooks config
+│   ├── hooks_semgrep.json             # (Alternate) Semgrep hooks config
+│   ├── security_gate_hook.sh          # CodeMender security hook script
+│   ├── security_gate_hook_semgrep.sh  # (Alternate) Semgrep security hook script
 │   ├── rules/
 │   │   └── security_workflow.md
 │   └── skills/
@@ -154,17 +156,21 @@ Located under `.agents/rules/`:
 - **Security-Driven Development Workflow Rule** (`security_workflow.md`): An `always_on` workspace rule that guarantees the agent follows the correct sequence: Planning -> Threat Modeling (producing `threat_model.md`) -> Writing functional & security tests (RED step) -> Implementing secure code (GREEN step, utilizing the `secure_coding` Guidelines Skill) -> Verification and pushing.
 
 ### 3. Lifecycle Hooks
-Defined in `.agents/hooks.json`, the hook intercepts `git push` commands:
+There are two hooks configurations available:
+- **CodeMender Hook** (`.agents/hooks.json`): Intercepts `git push` to run the CodeMender-based security gate script.
+- **Semgrep Hook** (`.agents/hooks_semgrep.json`): (Alternate) Intercepts `git push` to run the Semgrep-based security gate script. Rename this file to `hooks.json` to activate it.
+
+Example `hooks_semgrep.json` configuration:
 ```json
 {
-  "codemender-security-gate": {
+  "semgrep-security-gate": {
     "PreToolUse": [
       {
         "matcher": "git push*",
         "hooks": [
           {
             "type": "command",
-            "command": "./.agents/security_gate_hook.sh",
+            "command": "./.agents/security_gate_hook_semgrep.sh",
             "timeout": 120
           }
         ]
@@ -174,15 +180,9 @@ Defined in `.agents/hooks.json`, the hook intercepts `git push` commands:
 }
 ```
 
-### 4. Hook Script (`security_gate_hook.sh`)
-When the agent executes `git push`, the script interceptor:
-1. Discovers modified files in the commit.
-2. Runs CodeMender scan (`cm find`) on those files.
-3. If open vulnerabilities are detected, blocks the push and runs a **RED-GREEN Remediate & Test Loop**:
-   - Requests a failing reproduction test.
-   - Attempts to automatically fix the vulnerability using `cm fix`.
-   - Runs unit tests to verify the fix works and has no regressions.
-4. Escalates to human-in-the-loop (HITL) for unresolved failures, offering the option to mute with justification or run exploitability checks (`cm verify`).
+### 4. Hook Scripts
+- **CodeMender Gate Script** (`security_gate_hook.sh`): Runs CodeMender scan (`cm find`) on modified files. If findings exist, runs an automated RED-GREEN fix loop with `cm fix` and unittest discovery.
+- **Semgrep Gate Script** (`security_gate_hook_semgrep.sh`): Runs Semgrep scan locally using its open-source config rules (`semgrep scan --config auto --json`). If findings are detected, the script blocks the push and returns the exact list of issues to the AGY agent. The AGY agent then uses the TDD and Secure Coding skills to write, test, and apply the fixes directly.
 
 ---
 
