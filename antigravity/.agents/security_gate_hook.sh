@@ -16,7 +16,7 @@ done
 # Get all open findings in JSON format, and filter for files in $MODIFIED_FILES
 SCAN_RESULT=$(cm report --status OPEN --format json | jq --arg files "$MODIFIED_FILES" '
   ($files | split("\n")) as $mod_files |
-  [ .[] | select(.FilePath as $fp | any($mod_files[]; . != "" and ($fp | endswith(.)))) ]
+  [ .[] | select((.FilePath | gsub("\\\\"; "/")) as $fp | any($mod_files[]; . as $mf | $mf != "" and ($fp | endswith($mf)))) ]
 ' || true)
 FINDINGS_COUNT=$(echo "$SCAN_RESULT" | jq 'length')
 if [ -z "$FINDINGS_COUNT" ] || [ "$FINDINGS_COUNT" -eq 0 ]; then
