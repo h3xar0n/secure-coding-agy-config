@@ -1,0 +1,50 @@
+#!/bin/bash
+# Mock `cm` CLI for security_gate_hook.sh tests.
+# Behavior controlled by MOCK_CM_* env vars (see run_tests.sh).
+STATE_FILE="${MOCK_STATE_DIR:-/tmp}/cm_fixed_marker"
+
+case "$1" in
+  find)
+    exit "${MOCK_CM_FIND_EXIT:-0}"
+    ;;
+  report)
+    if [ "${MOCK_CM_REPORT_MODE:-clean}" = "error" ]; then
+      echo "cm: authentication failed - run 'gcloud auth application-default login'" >&2
+      exit 1
+    fi
+    # Once a fix has been "applied" (mock cm fix touches STATE_FILE), report clean.
+    if [ -f "$STATE_FILE" ]; then
+      echo '[]'
+      exit 0
+    fi
+    case "${MOCK_CM_REPORT_MODE:-clean}" in
+      clean) echo '[]' ;;
+      high)  echo "[{\"FindingID\":\"F1\",\"FilePath\":\"${MOCK_FILE:-vuln.py}\",\"Severity\":\"HIGH\"}]" ;;
+      low)   echo "[{\"FindingID\":\"F1\",\"FilePath\":\"${MOCK_FILE:-vuln.py}\",\"Severity\":\"LOW\"}]" ;;
+      mixed) echo "[{\"FindingID\":\"F1\",\"FilePath\":\"${MOCK_FILE:-vuln.py}\",\"Severity\":\"HIGH\"},{\"FindingID\":\"F2\",\"FilePath\":\"${MOCK_FILE:-vuln.py}\",\"Severity\":\"LOW\"}]" ;;
+      *) echo '[]' ;;
+    esac
+    exit 0
+    ;;
+  fix)
+    if [ "${MOCK_CM_FIX_EXIT:-0}" != "0" ]; then
+      exit "$MOCK_CM_FIX_EXIT"
+    fi
+    touch "$STATE_FILE"
+    if [ -n "$MOCK_FILE" ] && [ -f "$MOCK_FILE" ]; then
+      if [ "${MOCK_CM_FIX_LARGE:-false}" = "true" ]; then
+        for i in $(seq 1 100); do echo "# padding line $i" >> "$MOCK_FILE"; done
+      else
+        echo "# fixed" >> "$MOCK_FILE"
+      fi
+    fi
+    exit 0
+    ;;
+  verify)
+    # exit 0 = confirmed exploitable (matches original script's `if cm verify; then ... exploitable`)
+    exit "${MOCK_CM_VERIFY_EXIT:-1}"
+    ;;
+  *)
+    exit 0
+    ;;
+esac

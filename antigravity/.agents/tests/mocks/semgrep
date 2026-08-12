@@ -1,0 +1,18 @@
+#!/bin/bash
+# Mock `semgrep` CLI for security_gate_hook_semgrep.sh tests.
+# Behavior controlled by MOCK_SEMGREP_* env vars (see run_tests.sh).
+
+if [ "$1" = "scan" ]; then
+  if [ "${MOCK_SEMGREP_MODE:-clean}" = "error" ]; then
+    echo "semgrep: fatal error: could not load rules" >&2
+    exit 2
+  fi
+  case "${MOCK_SEMGREP_MODE:-clean}" in
+    clean) echo '{"results":[]}' ;;
+    high)  echo "{\"results\":[{\"path\":\"${MOCK_FILE:-vuln.py}\",\"start\":{\"line\":1},\"check_id\":\"x\",\"extra\":{\"message\":\"m\",\"severity\":\"ERROR\"}}]}" ;;
+    low)   echo "{\"results\":[{\"path\":\"${MOCK_FILE:-vuln.py}\",\"start\":{\"line\":1},\"check_id\":\"x\",\"extra\":{\"message\":\"m\",\"severity\":\"INFO\"}}]}" ;;
+    *) echo '{"results":[]}' ;;
+  esac
+  exit 0
+fi
+exit 0
